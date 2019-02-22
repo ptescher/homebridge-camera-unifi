@@ -69,18 +69,16 @@ unifiPlatform.prototype.didFinishLaunching = function() {
             if (!channel) {
               throw new Error("No RTSP channel found");
             }
+
+            var cameraVideoConfig = {
+              source: videoConfig.sourcePrefix + " -i rtsp://" + bootstrap.nvr.host + ':' + bootstrap.nvr.ports.rtsp + '/' + channel.rtspAlias,
+              stillImageSource: '-i https://' + bootstrap.nvr.host + ':' + bootstrap.nvr.ports.https + '/api/cameras/' + camera.id + '/snapshot?accessKey=' + accessKey
+            };
   
             var cameraConfig = {
               name: cameraName,
-              videoConfig: {
-                source: videoConfig.sourcePrefix + " -i rtsp://" + bootstrap.nvr.host + ':' + bootstrap.nvr.ports.rtsp + '/' + channel.rtspAlias,
-                stillImageSource: '-i https://' + bootstrap.nvr.host + ':' + bootstrap.nvr.ports.https + '/api/cameras/' + camera.id + '/snapshot?accessKey=' + accessKey,
-                maxStreams: videoConfig.maxStreams,
-                maxWidth: videoConfig.maxWidth,
-                maxHeight: videoConfig.maxHeight,
-                maxFPS: videoConfig.maxFPS
-              }
-            }
+              videoConfig: Object.assign(videoConfig, cameraVideoConfig)
+            };
     
             var uuid = UUIDGen.generate(cameraName);
             var cameraAccessory = new Accessory(cameraName, uuid, hap.Accessory.Categories.CAMERA);
